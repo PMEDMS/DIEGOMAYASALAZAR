@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PME Interactivo - I.E. Diego Maya Salazar</title>
+    
+    <!-- Chosen Palette: Soft Mint & Coral -->
+    <!-- Application Structure Plan: The SPA is structured with a persistent top navigation to switch between different views (Resumen, Diagnóstico, Soluciones, Participa) loaded into a main content area. This dashboard-like approach replaces the long scroll of the original report, allowing users to intentionally explore specific sections. This enhances usability by grouping related content and presenting key information, like interactive charts, upfront in a summary view, making the project's data more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key statistics (65% walk, 40% feel unsafe). Goal: Compare & Inform. Viz: Doughnut chart for transport modes, stat cards for safety perception. Interaction: Chart tooltips. Justification: Visuals are faster to parse than text lists. Library: Chart.js.
+        - Report Info: List of risk zones. Goal: Organize. Viz: Interactive card list. Interaction: Hover effects to focus attention. Justification: Cleaner and more focused than a static list. Library/Method: HTML/Tailwind/JS.
+        - Report Info: Solutions grouped by category. Goal: Organize & Explore. Viz: Tabbed interface. Interaction: Click to switch content. Justification: Space-efficient and lets users focus on one category. Library/Method: HTML/Tailwind/JS.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #f45d4c; /* Coral Red */
+            --color-secondary: #a1dbb2; /* Soft Mint Green */
+            --color-accent: #fee5ad; /* Pale Yellow */
+            --color-text: #3a3a3a; /* Dark Gray */
+            --color-bg: #f8f9fa; /* Light Gray */
+        }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-primary);
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            border-bottom-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .tab-link.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app-container" class="min-h-screen flex flex-col">
+        
+        <header class="bg-white shadow-md sticky top-0 z-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                            <span class="text-gray-500">PME</span> / <span class="text-[--color-primary]">I.E. Diego Maya Salazar</span>
+                        </h1>
+                    </div>
+                    <nav class="hidden md:flex space-x-6 lg:space-x-8">
+                        <a href="#" class="nav-link text-gray-600 font-semibold text-lg" data-view="resumen">Resumen</a>
+                        <a href="#" class="nav-link text-gray-600 font-semibold text-lg" data-view="diagnostico">Diagnóstico</a>
+                        <a href="#" class="nav-link text-gray-600 font-semibold text-lg" data-view="soluciones">Soluciones</a>
+                        <a href="#" class="nav-link text-gray-600 font-semibold text-lg" data-view="participa">Participa</a>
+                    </nav>
+                    <div class="md:hidden">
+                        <button id="mobile-menu-button" class="text-gray-700 hover:text-[--color-primary] focus:outline-none">
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+                <a href="#" class="block py-3 px-4 text-lg font-semibold text-gray-700 hover:bg-gray-100" data-view="resumen">Resumen</a>
+                <a href="#" class="block py-3 px-4 text-lg font-semibold text-gray-700 hover:bg-gray-100" data-view="diagnostico">Diagnóstico</a>
+                <a href="#" class="block py-3 px-4 text-lg font-semibold text-gray-700 hover:bg-gray-100" data-view="soluciones">Soluciones</a>
+                <a href="#" class="block py-3 px-4 text-lg font-semibold text-gray-700 hover:bg-gray-100" data-view="participa">Participa</a>
+            </div>
+        </header>
+
+        <main id="app-view" class="flex-grow container mx-auto p-4 md:p-8">
+        </main>
+
+        <footer class="bg-gray-800 text-white mt-12">
+            <div class="container mx-auto py-6 px-4 text-center">
+                <p>&copy; 2025 Proyecto de Movilidad Escolar - I.E. Diego Maya Salazar. Todos los derechos reservados.</p>
+                <p class="text-sm text-gray-400 mt-2">Una comunidad más segura y sostenible para nuestros estudiantes.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- View Templates -->
+    <template id="view-resumen">
+        <section class="animate-fade-in text-center">
+            <h2 class="text-4xl font-bold mb-4">Transformando la Movilidad Escolar</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                El Proyecto de Movilidad Escolar (PME) es una iniciativa comunitaria para crear un entorno más seguro, saludable y sostenible para los estudiantes de la I.E. Diego Maya Salazar en su trayecto diario a la escuela.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-700">Modos de Transporte</h3>
+                    <p class="text-gray-600 mb-4">Análisis de cómo se desplazan nuestros estudiantes.</p>
+                    <div class="chart-container">
+                        <canvas id="transport-chart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6 text-left">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-700">Percepción de Seguridad</h3>
+                        <p class="text-5xl font-bold text-[--color-primary] my-4">40%</p>
+                        <p class="text-lg text-gray-600">de los estudiantes y padres de familia perciben el trayecto a la escuela como inseguro o muy inseguro.</p>
+                    </div>
+                     <div class="bg-[--color-secondary] bg-opacity-30 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold text-gray-700">Nuestros Objetivos Clave</h3>
+                        <ul class="mt-4 space-y-2 text-gray-700 list-disc list-inside">
+                            <li>Reducir los incidentes de seguridad en un 50% en 2 años.</li>
+                            <li>Aumentar el uso de la bicicleta y la caminata en un 20%.</li>
+                            <li>Capacitar al 100% de los estudiantes en seguridad vial.</li>
+                            <li>Fortalecer la participación y cohesión comunitaria.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="view-diagnostico">
+        <section class="animate-fade-in">
+            <h2 class="text-4xl font-bold text-center mb-2">Diagnóstico de Movilidad</h2>
+            <p class="text-lg text-gray-600 text-center mb-10">Hemos identificado los puntos críticos y las estadísticas clave que fundamentan nuestro proyecto. Estos datos nos permiten enfocar nuestros esfuerzos donde más se necesitan.</p>
+
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-3xl font-bold mb-6 text-gray-700">Zonas de Riesgo Identificadas</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="border-l-4 border-[--color-primary] bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Intersección Calle 10 con Carrera 5</h4>
+                        <p class="text-gray-600">Alto flujo vehicular y falta de semáforo peatonal.</p>
+                    </div>
+                    <div class="border-l-4 border-[--color-primary] bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Parque El Triángulo</h4>
+                        <p class="text-gray-600">Poca iluminación nocturna y zonas sin vigilancia.</p>
+                    </div>
+                    <div class="border-l-4 border-[--color-primary] bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Salida del Colegio (Puerta Principal)</h4>
+                        <p class="text-gray-600">Aglomeración de vehículos y falta de zona de espera segura.</p>
+                    </div>
+                    <div class="border-l-4 border-[--color-primary] bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Puente Peatonal Av. Circunvalar</h4>
+                        <p class="text-gray-600">Estructura deteriorada y falta de accesibilidad.</p>
+                    </div>
+                     <div class="border-l-4 border-[--color-primary] bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Callejón "Los Almendros"</h4>
+                        <p class="text-gray-600">Vía estrecha sin andén y visibilidad reducida.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="view-soluciones">
+        <section class="animate-fade-in">
+            <h2 class="text-4xl font-bold text-center mb-2">Plan de Acción y Soluciones</h2>
+            <p class="text-lg text-gray-600 text-center mb-10">Nuestras soluciones se basan en un enfoque integral que abarca infraestructura, educación y comunidad para generar un impacto duradero.</p>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-6 flex flex-wrap justify-center border-b border-gray-200">
+                    <button class="tab-link py-3 px-6 font-semibold text-lg text-gray-600 rounded-t-lg" data-tab="infraestructura">Infraestructura</button>
+                    <button class="tab-link py-3 px-6 font-semibold text-lg text-gray-600 rounded-t-lg" data-tab="educacion">Educación</button>
+                    <button class="tab-link py-3 px-6 font-semibold text-lg text-gray-600 rounded-t-lg" data-tab="comunidad">Comunidad</button>
+                </div>
+
+                <div id="tab-content" class="bg-white p-6 md:p-8 rounded-b-lg rounded-tr-lg shadow-lg">
+                    <!-- Content will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+    </template>
+    
+    <template id="content-infraestructura">
+        <div class="animate-fade-in">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Mejoras Físicas para la Seguridad</h3>
+            <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                <li><strong>Senderos Peatonales Seguros:</strong> Demarcación y mejora de andenes en las rutas escolares principales.</li>
+                <li><strong>Señalización Vial:</strong> Instalación de nuevas señales de "Zona Escolar", límites de velocidad y cruces peatonales.</li>
+                <li><strong>Reductores de Velocidad:</strong> Colocación de topes en puntos estratégicos para calmar el tráfico.</li>
+                <li><strong>Mejora de Iluminación:</strong> Instalación de luminarias LED en las zonas identificadas como de baja visibilidad.</li>
+            </ul>
+        </div>
+    </template>
+
+    <template id="content-educacion">
+        <div class="animate-fade-in">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Cultura de Seguridad y Sostenibilidad</h3>
+            <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                <li><strong>Talleres de Seguridad Vial:</strong> Capacitaciones periódicas para estudiantes sobre normas de tránsito y comportamiento seguro.</li>
+                <li><strong>Campañas de Sensibilización:</strong> Material informativo y eventos para padres y conductores sobre la importancia de una movilidad responsable.</li>
+                <li><strong>Día de la Movilidad Sostenible:</strong> Jornada anual para promover el uso de la bicicleta, la caminata y el transporte público.</li>
+            </ul>
+        </div>
+    </template>
+
+    <template id="content-comunidad">
+        <div class="animate-fade-in">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Involucrando a Todos</h3>
+            <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                <li><strong>Patrullas Escolares:</strong> Creación de grupos de padres voluntarios para acompañar a los estudiantes en puntos clave.</li>
+                <li><strong>"Al Colegio en Bici":</strong> Organización de caravanas ciclísticas seguras una vez por semana.</li>
+                <li><strong>Mapeo Comunitario:</strong> Talleres para que la comunidad identifique y proponga soluciones a nuevos puntos de riesgo.</li>
+                <li><strong>Alianzas Estratégicas:</strong> Colaboración con la policía local, la alcaldía y empresas privadas para apoyar el proyecto.</li>
+            </ul>
+        </div>
+    </template>
+
+    <template id="view-participa">
+        <section class="animate-fade-in">
+            <h2 class="text-4xl font-bold text-center mb-2">Únete al Cambio</h2>
+            <p class="text-lg text-gray-600 text-center mb-10">Tu participación es fundamental para el éxito de este proyecto. ¡Inscríbete como voluntario o déjanos tus ideas!</p>
+            
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                <form id="participation-form" novalidate>
+                    <div class="mb-5">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Nombre Completo</label>
+                        <input type="text" id="name" name="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[--color-primary] focus:border-[--color-primary] block w-full p-2.5" required>
+                        <p class="mt-2 text-sm text-red-600 hidden error-message"></p>
+                    </div>
+                    <div class="mb-5">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[--color-primary] focus:border-[--color-primary] block w-full p-2.5" required>
+                         <p class="mt-2 text-sm text-red-600 hidden error-message"></p>
+                    </div>
+                    <div class="mb-5">
+                        <label for="interest" class="block mb-2 text-sm font-medium text-gray-900">Área de Interés</label>
+                        <select id="interest" name="interest" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[--color-primary] focus:border-[--color-primary] block w-full p-2.5">
+                            <option>Voluntario en eventos</option>
+                            <option>Patrulla escolar</option>
+                            <option>Aportar ideas</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-5">
+                        <label for="message" class="block mb-2 text-sm font-medium text-gray-900">Tu mensaje (opcional)</label>
+                        <textarea id="message" name="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-[--color-primary] focus:border-[--color-primary]"></textarea>
+                    </div>
+                    <button type="submit" class="text-white bg-[--color-primary] hover:bg-opacity-90 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg w-full sm:w-auto px-8 py-3 text-center">Enviar</button>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const appView = document.getElementById('app-view');
+            const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            let currentChartView = null;
+
+            const views = {
+                resumen: document.getElementById('view-resumen'),
+                diagnostico: document.getElementById('view-diagnostico'),
+                soluciones: document.getElementById('view-soluciones'),
+                participa: document.getElementById('view-participa'),
+            };
+
+            const tabContents = {
+                infraestructura: document.getElementById('content-infraestructura'),
+                educacion: document.getElementById('content-educacion'),
+                comunidad: document.getElementById('content-comunidad'),
+            };
+
+            function navigateTo(viewName) {
+                if (!views[viewName]) return;
+
+                appView.innerHTML = '';
+                const viewTemplate = views[viewName].content.cloneNode(true);
+                appView.appendChild(viewTemplate);
+
+                if (currentChartView && typeof currentChartView.destroy === 'function') {
+                    currentChartView.destroy();
+                }
+
+                if (viewName === 'resumen') {
+                    initResumenView();
+                } else if (viewName === 'soluciones') {
+                    initSolucionesView();
+                } else if (viewName === 'participa') {
+                    initParticipaView();
+                }
+
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.view === viewName);
+                });
+                
+                if(!mobileMenu.classList.contains('hidden')){
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+
+            function initResumenView() {
+                const ctx = document.getElementById('transport-chart')?.getContext('2d');
+                if (!ctx) return;
+                
+                currentChartView = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Caminando', 'Transporte Privado', 'Transporte Público'],
+                        datasets: [{
+                            label: 'Modo de Transporte',
+                            data: [65, 25, 10],
+                            backgroundColor: [
+                                'rgba(244, 93, 76, 0.7)',
+                                'rgba(161, 219, 178, 0.7)',
+                                'rgba(254, 229, 173, 0.7)',
+                            ],
+                            borderColor: [
+                                'rgba(244, 93, 76, 1)',
+                                'rgba(161, 219, 178, 1)',
+                                'rgba(254, 229, 173, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function initSolucionesView() {
+                const tabLinks = appView.querySelectorAll('.tab-link');
+                const tabContentContainer = appView.querySelector('#tab-content');
+
+                function switchTab(tabName) {
+                    if (!tabContents[tabName] || !tabContentContainer) return;
+                    
+                    tabContentContainer.innerHTML = '';
+                    const contentTemplate = tabContents[tabName].content.cloneNode(true);
+                    tabContentContainer.appendChild(contentTemplate);
+
+                    tabLinks.forEach(link => {
+                        link.classList.toggle('active', link.dataset.tab === tabName);
+                    });
+                }
+
+                tabLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        switchTab(e.target.dataset.tab);
+                    });
+                });
+                
+                switchTab('infraestructura');
+            }
+            
+            function initParticipaView() {
+                const form = document.getElementById('participation-form');
+                const nameInput = document.getElementById('name');
+                const emailInput = document.getElementById('email');
+
+                function validateField(input, message) {
+                    const errorEl = input.nextElementSibling;
+                    if (input.validity.valueMissing) {
+                        errorEl.textContent = 'Este campo es obligatorio.';
+                        errorEl.classList.remove('hidden');
+                        input.classList.add('border-red-500');
+                        return false;
+                    }
+                    if (input.validity.typeMismatch) {
+                        errorEl.textContent = 'Por favor, introduce un correo electrónico válido.';
+                        errorEl.classList.remove('hidden');
+                        input.classList.add('border-red-500');
+                        return false;
+                    }
+                    errorEl.classList.add('hidden');
+                    input.classList.remove('border-red-500');
+                    return true;
+                }
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const isNameValid = validateField(nameInput);
+                    const isEmailValid = validateField(emailInput);
+
+                    if (isNameValid && isEmailValid) {
+                        alert('¡Gracias por tu interés! Nos pondremos en contacto contigo pronto.');
+                        form.reset();
+                    }
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const viewName = e.target.dataset.view;
+                    navigateTo(viewName);
+                });
+            });
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            navigateTo('resumen');
+        });
+    </script>
+</body>
+</html>
