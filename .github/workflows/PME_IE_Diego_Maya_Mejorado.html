@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto de Movilidad Escolar (PME) - I.E. Diego Maya Salazar</title>
+    <style>
+        /* Estilos generales y de accesibilidad */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f9f9f9;
+            scroll-behavior: smooth; /* Suaviza el desplazamiento a las secciones */
+        }
+
+        /* Estilos de encabezado */
+        header {
+            background: linear-gradient(to right, #004d99, #0077b6); /* Gradiente de azul */
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            letter-spacing: 1px;
+        }
+        header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        /* Estilos de navegación */
+        nav {
+            background-color: #ffffff;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky; /* Hace la navegación pegajosa */
+            top: 0;
+            z-index: 1000;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #004d99;
+            font-weight: 600; /* Fuente más gruesa */
+            font-size: 1.1em;
+            transition: color 0.3s ease; /* Transición suave al cambiar el color */
+        }
+        nav a:hover, nav a:focus {
+            color: #0077b6; /* Color de énfasis */
+            text-decoration: underline; /* Subrayado al pasar el ratón */
+        }
+
+        /* Estilos de contenido principal */
+        main {
+            max-width: 1200px; /* Ancho máximo del contenido */
+            margin: 20px auto; /* Centra el contenido */
+            padding: 0 20px;
+        }
+
+        section {
+            background-color: #fff;
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        section:hover {
+            transform: translateY(-5px); /* Efecto de elevación */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        section h2 {
+            color: #004d99;
+            border-bottom: 2px solid #0077b6; /* Línea decorativa */
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+
+        /* Galería */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Centra las imágenes */
+            gap: 20px; /* Espacio entre imágenes */
+        }
+        .gallery img {
+            width: 100%;
+            max-width: 300px;
+            height: 200px; /* Altura fija para uniformidad */
+            object-fit: cover; /* Asegura que las imágenes cubran el espacio */
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .gallery img:hover {
+            transform: scale(1.05); /* Efecto de zoom */
+        }
+
+        /* Tabla de actividades */
+        table {
+            width: 100%;
+            border-collapse: separate; /* Para usar bordes redondeados en celdas */
+            border-spacing: 0 10px; /* Espacio entre filas */
+            margin-top: 20px;
+        }
+        table th, table td {
+            padding: 15px 20px;
+            text-align: left;
+        }
+        table thead th {
+            background-color: #0077b6;
+            color: white;
+            font-size: 1.1em;
+            border-radius: 8px 8px 0 0; /* Bordes redondeados solo arriba */
+        }
+        table tbody tr {
+            background-color: #f0f8ff; /* Azul muy claro para filas */
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        table tbody td {
+            border-top: 1px solid #e0e0e0; /* Borde superior entre celdas */
+            border-bottom: 1px solid #e0e0e0;
+        }
+        table tbody tr:last-child td {
+            border-bottom: none; /* Sin borde inferior en la última fila */
+        }
+        table a {
+            color: #004d99;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        table a:hover {
+            color: #0077b6;
+            text-decoration: underline;
+        }
+
+        /* Recursos */
+        #recursos ul {
+            list-style-type: none; /* Quita los puntos de lista */
+            padding: 0;
+        }
+        #recursos li {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #eef7ff; /* Color de fondo para cada ítem */
+            border-left: 4px solid #0077b6; /* Línea lateral de color */
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #recursos li:hover {
+            background-color: #d0eaff;
+        }
+        #recursos a {
+            text-decoration: none;
+            color: #004d99;
+            font-weight: 500;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+        #recursos a:hover {
+            color: #0077b6;
+        }
+
+        /* Formulario de participación */
+        #participa form {
+            background-color: #f0f8ff; /* Fondo claro para el formulario */
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #cce0ff; /* Borde sutil */
+        }
+        #participa label {
+            display: block; /* Hace que la etiqueta esté en su propia línea */
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #004d99;
+        }
+        #participa input[type="text"],
+        #participa textarea {
+            width: calc(100% - 20px); /* Ajusta el ancho considerando el padding */
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box; /* Incluye padding y borde en el ancho */
+        }
+        #participa textarea {
+            resize: vertical; /* Permite redimensionar solo verticalmente */
+        }
+        #participa input[type="submit"] {
+            background-color: #0077b6;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        #participa input[type="submit"]:hover {
+            background-color: #004d99;
+            transform: translateY(-2px); /* Ligero efecto de presionar */
+        }
+
+        /* Contacto */
+        #contacto p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        #contacto strong {
+            color: #004d99;
+        }
+
+        /* Estilos de pie de página */
+        footer {
+            background: linear-gradient(to left, #004d99, #0077b6); /* Gradiente de azul */
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 40px; /* Espacio sobre el footer */
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+        }
+        footer p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        /* Media queries para responsividad */
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            nav a {
+                display: block; /* Cada enlace en una línea */
+                margin: 10px 0;
+                font-size: 1em;
+            }
+            .gallery {
+                flex-direction: column; /* Imágenes en columna */
+                align-items: center; /* Centra imágenes */
+            }
+            .gallery img {
+                max-width: 90%; /* Ocupa casi todo el ancho */
+                height: auto; /* Altura automática */
+            }
+            table th, table td {
+                padding: 10px;
+            }
+            #participa input[type="text"],
+            #participa textarea {
+                width: 100%; /* Ocupa todo el ancho */
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Proyecto de Movilidad Escolar (PME)</h1>
+    <p>Institución Educativa Diego Maya Salazar</p>
+</header>
+
+<nav aria-label="Navegación principal">
+    <a href="#inicio">Inicio</a>
+    <a href="#que-es-pme">¿Qué es el PME?</a>
+    <a href="#galeria">Galería</a>
+    <a href="#actividades">Actividades</a>
+    <a href="#recursos">Recursos</a>
+    <a href="#participa">Participa</a>
+    <a href="#contacto">Contacto</a>
+</nav>
+
+<main>
+    <section id="inicio" aria-labelledby="inicio-heading">
+        <h2 id="inicio-heading">Bienvenido al PME</h2>
+        <p>¡Saludos a toda la comunidad educativa! Este es el espacio donde compartimos información vital sobre el Proyecto de Movilidad Escolar de nuestra Institución Educativa Diego Maya Salazar. Aquí encontrarás los avances, recursos y cómo puedes involucrarte para hacer nuestros desplazamientos escolares más seguros, sostenibles y participativos.</p>
+        <p>Nuestro objetivo es fomentar una cultura de seguridad vial y promover alternativas de transporte que cuiden nuestro entorno.</p>
+    </section>
+
+    <section id="que-es-pme" aria-labelledby="pme-heading">
+        <h2 id="pme-heading">¿Qué es el Proyecto de Movilidad Escolar (PME)?</h2>
+        <p>El Plan de Movilidad Escolar (PME) es una iniciativa fundamental que se alinea con marcos legales importantes como la <strong>Ley 1503 de 2011</strong> y el <strong>Decreto 746 de 2020</strong>. Su propósito principal es crear estrategias institucionales que garanticen que los desplazamientos de nuestros estudiantes, docentes y personal administrativo sean:</p>
+        <ul>
+            <li><strong>Seguros:</strong> Minimizando riesgos y promoviendo comportamientos viales responsables.</li>
+            <li><strong>Sostenibles:</strong> Incentivando el uso de medios de transporte amigables con el medio ambiente, como caminar, bicicleta o transporte público.</li>
+            <li><strong>Participativos:</strong> Involucrando a toda la comunidad en la identificación de problemas y la propuesta de soluciones.</li>
+        </ul>
+        <p>Trabajamos juntos para construir un entorno escolar más seguro y saludable para todos.</p>
+    </section>
+
+    <section id="galeria" aria-labelledby="galeria-heading">
+        <h2 id="galeria-heading">Nuestras Actividades en Acción</h2>
+        <p>Explora visualmente algunas de las actividades que hemos realizado para fortalecer nuestro Proyecto de Movilidad Escolar:</p>
+        <div class="gallery">
+            <img src="https://via.placeholder.com/300x200.png?text=Paseo+Ciclista+2024" alt="Estudiantes participando en un paseo ciclista escolar">
+            <img src="https://via.placeholder.com/300x200.png?text=Taller+Seguridad+Vial" alt="Taller interactivo sobre señales de tránsito">
+            <img src="https://via.placeholder.com/300x200.png?text=Caminata+Promocional" alt="Grupo de estudiantes y profesores en una caminata promocional">
+            <img src="https://via.placeholder.com/300x200.png?text=Simulacro+Vial" alt="Simulacro de situación de emergencia vial en la escuela">
+        </div>
+    </section>
+
+    <section id="actividades" aria-labelledby="actividades-heading">
+        <h2 id="actividades-heading">Agenda y Evidencias del PME</h2>
+        <p>Consulta las próximas actividades y los registros de las ya realizadas. ¡Tu participación es clave!</p>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Actividad</th>
+                    <th scope="col">Responsables</th>
+                    <th scope="col">Evidencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>06/05/2025</td>
+                    <td>Encuesta de Percepción de Movilidad y Seguridad Vial</td>
+                    <td>Comité PME, Encargado de Convivencia</td>
+                    <td><a href="#">Descargar Encuesta</a> (PDF)</td>
+                </tr>
+                <tr>
+                    <td>06/05/2025</td>
+                    <td>Primera Reunión del Comité PME (Año 2025)</td>
+                    <td>Coordinación Académica, Comité PME</td>
+                    <td><a href="#">Acta de Reunión</a> (PDF)</td>
+                </tr>
+                <tr>
+                    <td>15/05/2025</td>
+                    <td>Taller: Señalización Vial y Peatonal Segura</td>
+                    <td>Docentes de Tecnología, Comité PME</td>
+                    <td><a href="#">Registro Fotográfico</a></td>
+                </tr>
+                <tr>
+                    <td>20/05/2025</td>
+                    <td>Inicio Campaña "Camina Seguro, Vive Sano"</td>
+                    <td>Consejo Estudiantil, PME</td>
+                    <td><a href="#">Ver Póster</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="recursos" aria-labelledby="recursos-heading">
+        <h2 id="recursos-heading">Materiales de Apoyo</h2>
+        <p>Ponemos a tu disposición recursos valiosos para aprender más sobre movilidad segura y sostenible:</p>
+        <ul>
+            <li>
+                <a href="#">Infografía: Las Señales de Tránsito que Debes Conocer</a>
+            </li>
+            <li>
+                <a href="#">Podcast: "Huella Vial" - Episodio 1: Movilidad Segura en tu Barrio</a>
+            </li>
+            <li>
+                <a href="#">Guía Pedagógica: Integrando la Movilidad Escolar en el Aula</a>
+            </li>
+            <li>
+                <a href="#">Documento: Marco Legal del PME en Colombia</a>
+            </li>
+        </ul>
+    </section>
+
+    <section id="participa" aria-labelledby="participa-heading">
+        <h2 id="participa-heading">¡Tu Voz Cuenta! Participa</h2>
+        <p>¿Tienes ideas, sugerencias o inquietudes sobre la movilidad en nuestra institución? Queremos escucharte. Comparte tus aportes a través de este formulario:</p>
+        <form action="#" method="post"> <!-- Reemplaza # con la URL del servidor para procesar el formulario -->
+            <label for="nombre">Tu Nombre (opcional):</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: María Pérez">
+
+            <label for="mensaje">Tu Sugerencia o Comentario:</label>
+            <textarea id="mensaje" name="mensaje" rows="5" placeholder="Describe tu idea o propuesta aquí..." required></textarea>
+
+            <input type="submit" value="Enviar Sugerencia">
+        </form>
+    </section>
+
+    <section id="contacto" aria-labelledby="contacto-heading">
+        <h2 id="contacto-heading">Contáctanos</h2>
+        <p><strong>Institución Educativa Diego Maya Salazar</strong></p>
+        <p><strong>Dirección:</strong> Carrera 34 N° 32C-35, Pereira, Risaralda, Colombia</p>
+        <p><strong>Correo Electrónico:</strong> <a href="mailto:contacto@iediegomaya.edu.co">contacto@iediegomaya.edu.co</a></p>
+        <p><strong>Teléfono:</strong> (XX) XXX XXXX (Número de la institución)</p>
+        <p><strong>Horario de Atención:</strong> Lunes a Viernes, 8:00 AM - 4:00 PM</p>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 - Institución Educativa Diego Maya Salazar. Todos los derechos reservados.</p>
+    <p>Proyecto de Movilidad Escolar (PME) - Trabajando por una movilidad segura y sostenible.</p>
+</footer>
+
+</body>
+</html>
+```
