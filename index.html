@@ -1,14 +1,48 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redireccionando...</title>
-    <script>
-        window.location.href = 'index.html.html';
-    </script>
+    <title>Your Page Title</title>
+    <style>
+        .header-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+        .header-logo img {
+            max-width: 120px;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        @media (max-width: 768px) {
+            .header-logo img {
+                max-width: 100px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header-logo img {
+                max-width: 80px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Redireccionando a tu página...</p>
+    <header>
+        <div class="header-logo">
+            <img src="logo.JPG" alt="Your Logo" />
+        </div>
+        <h1>Your Title Here</h1>
+    </header>
+    <main>
+        <!-- Main content here -->
+    </main>
 </body>
 </html>
